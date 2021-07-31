@@ -39,6 +39,12 @@ def build_records(images, labels, subset, offset_id=0):
 
 @click.command()
 @click.option(
+    "--input-dir",
+    default="./resources/data",
+    type=str,
+    help="The directory containing fashion-mnist files",
+)
+@click.option(
     "--dataset-name",
     default="fashion_mnist_dev",
     type=str,
@@ -52,9 +58,12 @@ def build_records(images, labels, subset, offset_id=0):
     type=str,
     help="The output directory to store json file to load to BigQuery",
 )
-def load_bigquery(dataset_name, table_name, output_dir):
+def load_bigquery(input_dir, dataset_name, table_name, output_dir):
     """Load fashion-mnist data to BigQuery"""
-    mndata = MNIST("./resources/data")
+    if input_dir is None:
+        input_dir = os.path.join(os.getcwd(), "resources/data")
+
+    mndata = MNIST(input_dir)
     mndata.gz = True
 
     train_images, train_labels = mndata.load_training()
@@ -78,6 +87,7 @@ def load_bigquery(dataset_name, table_name, output_dir):
         output_dir = tempfile.gettempdir()
 
     json_path = os.path.join(output_dir, "fashion_mnist.json")
+    logging.debug(f"Writing json file to {json_path}")
     dataframe.to_json(json_path, orient="records", lines=True)
     schema_path = os.path.join(os.getcwd(), "resources/schema/fashion_mnist.json")
     job_config = bigquery.LoadJobConfig(
@@ -88,6 +98,7 @@ def load_bigquery(dataset_name, table_name, output_dir):
 
     client = bigquery.Client()
     table_id = f"{dataset_name}.{table_name}"
+    logging.info(f"Loading to BigQuery table {table_id}")
     with open(json_path, "rb") as json_file:
         job = client.load_table_from_file(json_file, table_id, job_config=job_config)
     job.result()

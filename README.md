@@ -10,6 +10,7 @@ Usage: load_bigquery.py [OPTIONS]
   Load fashion-mnist data to BigQuery
 
 Options:
+  --input-dir TEXT     The directory containing fashion-mnist files
   --dataset-name TEXT  BigQuery dataset name
   --table-name TEXT    BigQuery table name
   --output-dir TEXT    The output directory to store json file to load to
