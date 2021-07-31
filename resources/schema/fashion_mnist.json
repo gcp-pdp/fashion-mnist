@@ -1,0 +1,22 @@
+[
+    {
+        "name": "image_id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "subset",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "class",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "pixels",
+        "type": "INTEGER",
+        "mode": "REPEATED"
+    }
+]
